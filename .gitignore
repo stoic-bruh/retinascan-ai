@@ -1,0 +1,23 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Trained model weights - too large for git, share via drive/release instead
+model/checkpoints/
+*.pt
+*.pth
+*.onnx
+
+# Dataset - never commit raw images
+data/aptos2019/
+data/idrid/
+data/messidor2/
+data/**/*.png
+data/**/*.jpg
+data/**/*.csv
+
+# OS/editor junk
+.DS_Store
+.vscode/
+*.ipynb_checkpoints/
