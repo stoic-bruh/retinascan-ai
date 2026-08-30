@@ -8,6 +8,10 @@ Usage:
 import argparse
 import os
 
+import cv2
+cv2.setNumThreads(0)  # prevents deadlock between OpenCV's internal threads
+                       # and PyTorch's multiprocessing DataLoader workers
+
 import numpy as np
 import pandas as pd
 import torch
@@ -16,6 +20,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, models
 from sklearn.model_selection import train_test_split
 from sklearn.utils.class_weight import compute_class_weight
+from tqdm import tqdm
 
 from preprocess import preprocess_image
 
@@ -91,8 +96,8 @@ def main():
     train_ds = APTOSDataset(train_df, img_dir, transform=train_transform)
     val_ds = APTOSDataset(val_df, img_dir, transform=val_transform)
 
-    train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True, num_workers=2)
-    val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=2)
+    train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True, num_workers=0)
+    val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=0)
 
     model = build_model().to(device)
     criterion = nn.CrossEntropyLoss(weight=class_weights)
@@ -103,7 +108,8 @@ def main():
     for epoch in range(args.epochs):
         model.train()
         train_loss = 0.0
-        for imgs, labels in train_loader:
+        pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{args.epochs} [train]")
+        for imgs, labels in pbar:
             imgs, labels = imgs.to(device), labels.to(device)
             optimizer.zero_grad()
             out = model(imgs)
@@ -111,12 +117,13 @@ def main():
             loss.backward()
             optimizer.step()
             train_loss += loss.item() * imgs.size(0)
+            pbar.set_postfix(loss=f"{loss.item():.4f}")
         train_loss /= len(train_ds)
 
         model.eval()
         correct, total = 0, 0
         with torch.no_grad():
-            for imgs, labels in val_loader:
+            for imgs, labels in tqdm(val_loader, desc=f"Epoch {epoch+1}/{args.epochs} [val]"):
                 imgs, labels = imgs.to(device), labels.to(device)
                 out = model(imgs)
                 preds = out.argmax(dim=1)
