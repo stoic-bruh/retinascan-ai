@@ -1,99 +1,1155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>RetinaScan AI — DR Screening</title>
-<style>
-  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; background: #f7f9fb; color: #1a1a1a; }
-  h1 { font-size: 1.6rem; }
-  .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-top: 20px; }
-  input[type=file] { margin: 12px 0; }
-  button { background: #2563eb; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
-  button:disabled { background: #94a3b8; }
-  .images { display: flex; gap: 16px; margin-top: 16px; }
-  .images img { width: 260px; border-radius: 8px; }
-  .result { margin-top: 16px; }
-  .label { font-size: 1.3rem; font-weight: 600; }
-  .conf { color: #475569; }
-  .bar-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 0.85rem; }
-  .bar-bg { flex: 1; background: #e2e8f0; border-radius: 4px; height: 10px; overflow: hidden; }
-  .bar-fill { background: #2563eb; height: 100%; }
-  .note { background: #fef3c7; padding: 12px; border-radius: 8px; margin-top: 12px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetinaScan AI — Diabetic Retinopathy Screening</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 32px 16px 64px;
+      background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      margin-bottom: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+    }
+    .brand-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      background: #e0e7ff;
+      color: #3730a3;
+      margin-bottom: 4px;
+    }
+    h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      margin-top: 3px;
+    }
+
+    /* API Connection Indicator */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .status-badge:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+    .dot.connected {
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    }
+    .dot.disconnected {
+      background: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+    }
+
+    /* Main Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    /* Dropzone */
+    .dropzone {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #f8fafc;
+      position: relative;
+      overflow: hidden;
+    }
+    .dropzone:hover, .dropzone.drag-over {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      transform: translateY(-1px);
+    }
+    .dropzone-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      color: var(--primary);
+      transition: transform 0.2s ease;
+    }
+    .dropzone:hover .dropzone-icon {
+      transform: scale(1.08);
+    }
+    .dropzone p {
+      font-size: 1rem;
+      color: #1e293b;
+      font-weight: 600;
+    }
+    .dropzone span {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 5px;
+    }
+
+    /* File preview */
+    .file-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 8px;
+      position: relative;
+    }
+    .preview-thumb-wrap {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .preview-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Laser scan beam animation on preview image */
+    .scan-beam {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #38bdf8, #0284c7, #38bdf8, transparent);
+      box-shadow: 0 0 10px #38bdf8, 0 0 20px #0284c7;
+      animation: sweep 1.4s ease-in-out infinite alternate;
+    }
+    @keyframes sweep {
+      from { top: 0%; }
+      to { top: 96%; }
+    }
+
+    .preview-meta {
+      text-align: left;
+    }
+    .preview-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .preview-size {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .change-btn {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .change-btn:hover {
+      color: var(--primary-hover);
+    }
+
+    /* Primary Scan Button */
+    .btn-row {
+      margin-top: 20px;
+    }
+    button.primary-btn {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      border: none;
+      padding: 13px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+    button.primary-btn:hover:not(:disabled) {
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+      transform: translateY(-1px);
+    }
+    button.primary-btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+    button:disabled {
+      background: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Error alert */
+    .alert-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      margin-top: 18px;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      animation: shake 0.3s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* Results section */
+    .result {
+      display: none;
+      margin-top: 32px;
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+      animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Diagnosis Banner */
+    .diagnosis-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f1f5f9;
+      margin-bottom: 20px;
+    }
+    .label-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.02em;
+    }
+    .status-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      box-shadow: var(--shadow-sm);
+    }
+    .status-no-dr { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .status-mild { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .status-mod { background: #ffedd5; color: #c2410c; border: 1px solid #fdba74; }
+    .status-severe { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .status-prolif { background: #fdf2f8; color: #be185d; border: 1px solid #f9a8d4; }
+
+    .conf-badge {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e293b;
+      background: #f8fafc;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    /* View Mode Switcher (Split vs Side-by-Side) */
+    .view-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .view-modes {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .view-btn {
+      background: transparent;
+      border: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .view-btn.active {
+      background: white;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* 1. Interactive Comparison Split Slider */
+    .comparison-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      max-width: 520px;
+      margin: 0 auto;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #0f172a;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      background: #090d16;
+      user-select: none;
+    }
+    .comp-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .comp-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      width: 50%;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .comp-overlay-inner {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      width: 100%;
+    }
+    /* Divider handle */
+    .slider-divider {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      pointer-events: none;
+    }
+    .slider-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 38px;
+      height: 38px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0f172a;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    /* Invisible range controller over the comparison container */
+    .comparison-range {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      opacity: 0;
+      cursor: ew-resize;
+      margin: 0;
+      z-index: 10;
+    }
+    .comparison-labels {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .comp-pill {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* 2. Side by Side Images Grid */
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .image-box {
+      background: #090d16;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .image-box-header {
+      padding: 10px 14px;
+      background: #1e293b;
+      color: #cbd5e1;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .action-link {
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .action-link:hover {
+      text-decoration: underline;
+    }
+    .img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-in;
+    }
+    .img-wrap img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* Clinical guidance box */
+    .explanation-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 16px 18px;
+      border-radius: 0 10px 10px 0;
+      margin-top: 22px;
+      font-size: 0.94rem;
+      color: #334155;
+      line-height: 1.6;
+    }
+    .explanation-box strong {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    /* Probability breakdown bars */
+    .prob-section {
+      margin-top: 26px;
+      padding-top: 20px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .prob-section h3 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 9px 0;
+      font-size: 0.86rem;
+    }
+    .bar-name {
+      width: 135px;
+      font-weight: 500;
+      color: #334155;
+    }
+    .bar-row.is-top .bar-name {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .bar-bg {
+      flex: 1;
+      background: #e2e8f0;
+      border-radius: 6px;
+      height: 11px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      background: #94a3b8;
+    }
+    .bar-row.is-top .bar-fill.bar-c0 { background: #16a34a; }
+    .bar-row.is-top .bar-fill.bar-c1 { background: #d97706; }
+    .bar-row.is-top .bar-fill.bar-c2 { background: #ea580c; }
+    .bar-row.is-top .bar-fill.bar-c3 { background: #dc2626; }
+    .bar-row.is-top .bar-fill.bar-c4 { background: #be185d; }
+
+    .bar-pct {
+      width: 48px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+    .bar-row.is-top .bar-pct {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Reset button */
+    .reset-row {
+      margin-top: 26px;
+      text-align: center;
+    }
+    .secondary-btn {
+      background: white;
+      border: 1px solid var(--border);
+      color: #475569;
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s;
+    }
+    .secondary-btn:hover {
+      background: #f8fafc;
+      color: var(--text-main);
+      border-color: #cbd5e1;
+    }
+
+    /* Lightbox Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal.open { display: flex; }
+    .modal-content {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    }
+    .modal-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      color: white;
+      font-size: 36px;
+      font-weight: 300;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* Config Modal */
+    .config-box {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+    }
+    .config-box h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    .config-box p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .config-input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+    .config-btns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  </style>
 </head>
 <body>
-  <h1>RetinaScan AI</h1>
-  <p>Explainable AI screening for Diabetic Retinopathy — upload a fundus image to get a severity grade and a heatmap showing why.</p>
-
-  <div class="card">
-    <input type="file" id="fileInput" accept="image/*">
-    <br>
-    <button id="scanBtn" onclick="runScan()">Scan Image</button>
-
-    <div id="result" class="result" style="display:none;">
-      <div class="images">
-        <div><p>Uploaded (processed)</p><img id="origImg"></div>
-        <div><p>Grad-CAM heatmap</p><img id="heatmapImg"></div>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </div>
+        <div>
+          <span class="badge">SIH26038 · MathWorks Track</span>
+          <h1>RetinaScan AI</h1>
+          <p class="subtitle">Explainable AI screening for Diabetic Retinopathy — clinical severity grading with Grad-CAM heatmaps.</p>
+        </div>
       </div>
-      <div class="label" id="labelText"></div>
-      <div class="conf" id="confText"></div>
-      <div id="probBars"></div>
-      <div class="note" id="explanationText"></div>
+      <div class="status-badge" onclick="openConfigModal()" title="Click to view or edit backend API URL">
+        <span id="statusDot" class="dot"></span>
+        <span id="statusText">Checking API...</span>
+      </div>
+    </header>
+
+    <div class="card">
+      <div id="dropzone" class="dropzone">
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        <div id="dropzoneContent">
+          <svg class="dropzone-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <p>Drag and drop a retinal fundus image here, or click to browse</p>
+          <span>Supports PNG, JPG, JPEG</span>
+        </div>
+        <div id="previewContent" class="file-preview" style="display:none;">
+          <div class="preview-thumb-wrap">
+            <img id="previewImg" class="preview-thumb" alt="Preview">
+            <div id="scanBeam" class="scan-beam"></div>
+          </div>
+          <div class="preview-meta">
+            <div id="previewName" class="preview-name">image.png</div>
+            <div id="previewSize" class="preview-size">0 KB</div>
+            <span class="change-btn" id="changeBtn">Choose a different image</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="errorAlert" class="alert-error">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span id="errorMsg"></span>
+      </div>
+
+      <div class="btn-row">
+        <button id="scanBtn" class="primary-btn" onclick="runScan()">
+          <span id="btnText">Scan Fundus Image</span>
+        </button>
+      </div>
+
+      <!-- Result section -->
+      <div id="result" class="result">
+        <div class="diagnosis-header">
+          <div class="label-title">
+            <span id="labelText"></span>
+            <span id="statusPill" class="status-pill"></span>
+          </div>
+          <div class="conf-badge" id="confText"></div>
+        </div>
+
+        <!-- View mode switcher -->
+        <div class="view-toolbar">
+          <div class="view-modes">
+            <button id="btnModeSlider" class="view-btn active" onclick="setViewMode('slider')">⇋ Comparison Slider</button>
+            <button id="btnModeGrid" class="view-btn" onclick="setViewMode('grid')">◫ Side by Side</button>
+          </div>
+          <div>
+            <a id="downloadLink" class="action-link" style="font-weight: 600;">Download Heatmap</a>
+          </div>
+        </div>
+
+        <!-- 1. Interactive Split Comparison View (Default) -->
+        <div id="sliderView" class="comparison-container">
+          <img id="sliderOrigImg" class="comp-img" alt="Original Preprocessed">
+          <div id="sliderOverlay" class="comp-overlay">
+            <img id="sliderHeatmapImg" class="comp-img comp-overlay-inner" alt="Heatmap Overlay">
+          </div>
+          <div id="sliderDivider" class="slider-divider">
+            <div class="slider-handle">⇄</div>
+          </div>
+          <input type="range" min="0" max="100" value="50" class="comparison-range" id="compRange" oninput="updateComparison(this.value)">
+          <div class="comparison-labels">
+            <span class="comp-pill">Preprocessed Fundus</span>
+            <span class="comp-pill">Grad-CAM Overlay</span>
+          </div>
+        </div>
+
+        <!-- 2. Side by Side View -->
+        <div id="gridView" class="images-grid" style="display:none;">
+          <div class="image-box">
+            <div class="image-box-header">
+              <span>Preprocessed Input (CLAHE)</span>
+              <span class="action-link" onclick="openModal('origImg')">Expand</span>
+            </div>
+            <div class="img-wrap" onclick="openModal('origImg')">
+              <img id="origImg" alt="Preprocessed fundus image">
+            </div>
+          </div>
+          <div class="image-box">
+            <div class="image-box-header">
+              <span>Grad-CAM Heatmap</span>
+              <span class="action-link" onclick="openModal('heatmapImg')">Expand</span>
+            </div>
+            <div class="img-wrap" onclick="openModal('heatmapImg')">
+              <img id="heatmapImg" alt="Grad-CAM explainability heatmap">
+            </div>
+          </div>
+        </div>
+
+        <!-- Clinical explanation -->
+        <div class="explanation-box">
+          <strong>Clinical Recommendation</strong>
+          <span id="explanationText"></span>
+        </div>
+
+        <!-- Probability bars -->
+        <div class="prob-section">
+          <h3>Class Probability Breakdown</h3>
+          <div id="probBars"></div>
+        </div>
+
+        <div class="reset-row">
+          <button class="secondary-btn" onclick="resetScan()">Scan Another Image</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div id="imageModal" class="modal" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img id="modalImg" class="modal-content" src="" alt="Full view">
+  </div>
+
+  <!-- API URL Config Modal -->
+  <div id="configModal" class="modal" onclick="closeConfigModal(event)">
+    <div class="config-box" onclick="event.stopPropagation()">
+      <h3>Backend API Endpoint</h3>
+      <p>Configure the backend server URL (useful for cloud deployments like Render or Hugging Face):</p>
+      <input type="text" id="apiUrlInput" class="config-input" placeholder="http://localhost:8000">
+      <div class="config-btns">
+        <button class="secondary-btn" onclick="closeConfigModal()">Cancel</button>
+        <button class="primary-btn" style="width: auto; padding: 8px 16px;" onclick="saveApiUrl()">Save & Connect</button>
+      </div>
     </div>
   </div>
 
 <script>
-// Change this if your backend runs elsewhere
-const API_URL = "http://localhost:8000";
+// Dynamic API URL: checks localStorage, then host, falls back to localhost:8000
+function getInitialApiUrl() {
+  const saved = localStorage.getItem("retinascan_api_url");
+  if (saved) return saved;
+  // If served directly by the FastAPI backend on any port
+  if (window.location.protocol.startsWith("http") && window.location.port !== "5500" && window.location.port !== "3000") {
+    return window.location.origin;
+  }
+  return "http://localhost:8000";
+}
+
+let API_URL = getInitialApiUrl();
+
+const fileInput = document.getElementById("fileInput");
+const dropzone = document.getElementById("dropzone");
+const dropzoneContent = document.getElementById("dropzoneContent");
+const previewContent = document.getElementById("previewContent");
+const previewImg = document.getElementById("previewImg");
+const previewName = document.getElementById("previewName");
+const previewSize = document.getElementById("previewSize");
+const scanBeam = document.getElementById("scanBeam");
+const scanBtn = document.getElementById("scanBtn");
+const btnText = document.getElementById("btnText");
+const errorAlert = document.getElementById("errorAlert");
+const errorMsg = document.getElementById("errorMsg");
+const changeBtn = document.getElementById("changeBtn");
+const downloadLink = document.getElementById("downloadLink");
+
+// Check API health
+async function checkApiHealth() {
+  const dot = document.getElementById("statusDot");
+  const text = document.getElementById("statusText");
+  try {
+    const res = await fetch(`${API_URL}/health`, { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      dot.className = "dot connected";
+      text.textContent = "API Online";
+    } else {
+      throw new Error();
+    }
+  } catch (e) {
+    dot.className = "dot disconnected";
+    text.textContent = "API Offline";
+  }
+}
+checkApiHealth();
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorAlert.style.display = "flex";
+}
+
+function clearError() {
+  errorMsg.textContent = "";
+  errorAlert.style.display = "none";
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / 1048576).toFixed(1) + " MB";
+}
+
+function displayFilePreview(file) {
+  clearError();
+  if (!file.type.startsWith("image/")) {
+    showError("Please select a valid image file (PNG, JPG, JPEG).");
+    return;
+  }
+  previewName.textContent = file.name;
+  previewSize.textContent = formatBytes(file.size);
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewImg.src = e.target.result;
+    dropzoneContent.style.display = "none";
+    previewContent.style.display = "flex";
+  };
+  reader.readAsDataURL(file);
+}
+
+// Dropzone interactions
+dropzone.addEventListener("click", (e) => {
+  if (e.target === changeBtn) {
+    fileInput.value = "";
+    fileInput.click();
+  } else {
+    fileInput.click();
+  }
+});
+
+fileInput.addEventListener("change", () => {
+  if (fileInput.files.length) {
+    displayFilePreview(fileInput.files[0]);
+  }
+});
+
+dropzone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropzone.classList.add("drag-over");
+});
+
+dropzone.addEventListener("dragleave", () => {
+  dropzone.classList.remove("drag-over");
+});
+
+dropzone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropzone.classList.remove("drag-over");
+  if (e.dataTransfer.files.length) {
+    fileInput.files = e.dataTransfer.files;
+    displayFilePreview(fileInput.files[0]);
+  }
+});
+
+function getStatusPillClass(label) {
+  if (label.includes("No DR")) return "status-no-dr";
+  if (label.includes("Mild")) return "status-mild";
+  if (label.includes("Moderate")) return "status-mod";
+  if (label.includes("Severe")) return "status-severe";
+  if (label.includes("Proliferative")) return "status-prolif";
+  return "";
+}
+
+function getClassBarColor(idx) {
+  return "bar-c" + idx;
+}
+
+// Before/After comparison slider logic
+function updateComparison(val) {
+  const overlay = document.getElementById("sliderOverlay");
+  const divider = document.getElementById("sliderDivider");
+  overlay.style.width = val + "%";
+  divider.style.left = val + "%";
+}
+
+function setViewMode(mode) {
+  const sliderView = document.getElementById("sliderView");
+  const gridView = document.getElementById("gridView");
+  const btnSlider = document.getElementById("btnModeSlider");
+  const btnGrid = document.getElementById("btnModeGrid");
+
+  if (mode === "slider") {
+    sliderView.style.display = "block";
+    gridView.style.display = "none";
+    btnSlider.classList.add("active");
+    btnGrid.classList.remove("active");
+  } else {
+    sliderView.style.display = "none";
+    gridView.style.display = "grid";
+    btnSlider.classList.remove("active");
+    btnGrid.classList.add("active");
+  }
+}
 
 async function runScan() {
-  const fileInput = document.getElementById("fileInput");
-  const btn = document.getElementById("scanBtn");
+  clearError();
   if (!fileInput.files.length) {
-    alert("Choose an image first.");
+    showError("Please select or drop an image file first.");
     return;
   }
 
-  btn.disabled = true;
-  btn.textContent = "Scanning...";
+  scanBtn.disabled = true;
+  btnText.innerHTML = '<span class="spinner"></span> Processing fundus image...';
+  scanBeam.style.display = "block";
 
   const formData = new FormData();
   formData.append("file", fileInput.files[0]);
 
   try {
     const res = await fetch(`${API_URL}/predict`, { method: "POST", body: formData });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      const errDetail = await res.text();
+      throw new Error(`Server returned ${res.status}: ${errDetail}`);
+    }
     const data = await res.json();
     renderResult(data);
   } catch (err) {
-    alert("Prediction failed: " + err.message);
+    showError("Prediction failed: " + err.message + ". Make sure the backend server is running at " + API_URL);
   } finally {
-    btn.disabled = false;
-    btn.textContent = "Scan Image";
+    scanBtn.disabled = false;
+    btnText.textContent = "Scan Fundus Image";
+    scanBeam.style.display = "none";
   }
 }
 
 function renderResult(data) {
-  document.getElementById("result").style.display = "block";
-  document.getElementById("origImg").src = "data:image/png;base64," + data.processed_image_b64;
-  document.getElementById("heatmapImg").src = "data:image/png;base64," + data.heatmap_overlay_b64;
-  document.getElementById("labelText").textContent = data.predicted_label;
+  const resultDiv = document.getElementById("result");
+  resultDiv.style.display = "block";
+
+  const origSrc = "data:image/png;base64," + data.processed_image_b64;
+  const heatmapSrc = "data:image/png;base64," + data.heatmap_overlay_b64;
+
+  // Populate side-by-side grid
+  document.getElementById("origImg").src = origSrc;
+  document.getElementById("heatmapImg").src = heatmapSrc;
+
+  // Populate comparison slider
+  document.getElementById("sliderOrigImg").src = origSrc;
+  document.getElementById("sliderHeatmapImg").src = heatmapSrc;
+  document.getElementById("compRange").value = 50;
+  updateComparison(50);
+
+  // Set download link
+  downloadLink.href = heatmapSrc;
+  downloadLink.download = `retinascan_${data.predicted_label.toLowerCase().replace(/\s+/g, "_")}.png`;
+
+  const labelText = document.getElementById("labelText");
+  labelText.textContent = data.predicted_label;
+
+  const statusPill = document.getElementById("statusPill");
+  statusPill.textContent = "Class " + data.predicted_class;
+  statusPill.className = "status-pill " + getStatusPillClass(data.predicted_label);
+
   document.getElementById("confText").textContent = `Confidence: ${(data.confidence * 100).toFixed(1)}%`;
   document.getElementById("explanationText").textContent = data.explanation;
 
   const barsDiv = document.getElementById("probBars");
   barsDiv.innerHTML = "";
+  let idx = 0;
   for (const [label, prob] of Object.entries(data.class_probabilities)) {
+    const isPredicted = label === data.predicted_label;
     const row = document.createElement("div");
-    row.className = "bar-row";
+    row.className = "bar-row" + (isPredicted ? " is-top" : "");
+    const colorClass = getClassBarColor(idx);
     row.innerHTML = `
-      <span style="width:120px;">${label}</span>
-      <div class="bar-bg"><div class="bar-fill" style="width:${prob * 100}%;"></div></div>
-      <span>${(prob * 100).toFixed(1)}%</span>
+      <span class="bar-name">${label}</span>
+      <div class="bar-bg"><div class="bar-fill ${colorClass}" style="width:${prob * 100}%;"></div></div>
+      <span class="bar-pct">${(prob * 100).toFixed(1)}%</span>
     `;
     barsDiv.appendChild(row);
+    idx++;
+  }
+
+  // Smooth scroll down to results
+  resultDiv.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function resetScan() {
+  fileInput.value = "";
+  dropzoneContent.style.display = "block";
+  previewContent.style.display = "none";
+  document.getElementById("result").style.display = "none";
+  clearError();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Lightbox modal functions
+function openModal(imgId) {
+  const src = document.getElementById(imgId).src;
+  if (!src) return;
+  document.getElementById("modalImg").src = src;
+  document.getElementById("imageModal").classList.add("open");
+}
+function closeModal() {
+  document.getElementById("imageModal").classList.remove("open");
+}
+
+// Config Modal functions
+function openConfigModal() {
+  document.getElementById("apiUrlInput").value = API_URL;
+  document.getElementById("configModal").classList.add("open");
+}
+function closeConfigModal(e) {
+  if (!e || e.target === document.getElementById("configModal")) {
+    document.getElementById("configModal").classList.remove("open");
   }
 }
+function saveApiUrl() {
+  const val = document.getElementById("apiUrlInput").value.trim().replace(/\/+$/, "");
+  if (val) {
+    API_URL = val;
+    localStorage.setItem("retinascan_api_url", API_URL);
+    closeConfigModal();
+    checkApiHealth();
+  }
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeModal();
+    closeConfigModal();
+  }
+});
 </script>
 </body>
 </html>

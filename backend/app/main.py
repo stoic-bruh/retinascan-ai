@@ -48,3 +48,12 @@ async def predict_endpoint(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Inference failed: {e}")
 
     return result
+
+
+# Mount frontend static files so backend + frontend can be served together in a single deployment
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+
+FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "frontend"
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
