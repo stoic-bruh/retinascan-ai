@@ -368,163 +368,50 @@
       border: 1px solid var(--border);
     }
 
-    /* View Mode Switcher (Split vs Side-by-Side) */
-    .view-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .view-modes {
-      display: inline-flex;
-      background: #f1f5f9;
-      padding: 3px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
-    .view-btn {
-      background: transparent;
-      border: none;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      padding: 5px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .view-btn.active {
-      background: white;
-      color: var(--text-main);
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* 1. Interactive Comparison Split Slider */
-    .comparison-container {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      max-width: 520px;
-      margin: 0 auto;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #0f172a;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-      background: #090d16;
-      user-select: none;
-    }
-    .comp-img {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      object-fit: contain;
-      pointer-events: none;
-    }
-    .comp-overlay {
-      position: absolute;
-      top: 0; left: 0;
-      height: 100%;
-      width: 50%;
-      overflow: hidden;
-      pointer-events: none;
-    }
-    .comp-overlay-inner {
-      position: absolute;
-      top: 0; left: 0;
-      height: 100%;
-      width: 100%;
-    }
-    /* Divider handle */
-    .slider-divider {
-      position: absolute;
-      top: 0; bottom: 0;
-      left: 50%;
-      width: 2px;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      pointer-events: none;
-    }
-    .slider-handle {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 38px;
-      height: 38px;
-      background: white;
-      border-radius: 50%;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #0f172a;
-      font-size: 14px;
-      font-weight: bold;
-    }
-    /* Invisible range controller over the comparison container */
-    .comparison-range {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      opacity: 0;
-      cursor: ew-resize;
-      margin: 0;
-      z-index: 10;
-    }
-    .comparison-labels {
-      position: absolute;
-      bottom: 12px;
-      left: 12px;
-      right: 12px;
-      display: flex;
-      justify-content: space-between;
-      pointer-events: none;
-      z-index: 5;
-    }
-    .comp-pill {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(4px);
-      color: white;
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 3px 9px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    /* 2. Side by Side Images Grid */
+    /* Diagnostic Images Grid (Side-by-Side) */
     .images-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 22px;
     }
     .image-box {
       background: #090d16;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--border);
       display: flex;
       flex-direction: column;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .image-box:hover {
+      box-shadow: var(--shadow-lg);
     }
     .image-box-header {
-      padding: 10px 14px;
+      padding: 11px 16px;
       background: #1e293b;
-      color: #cbd5e1;
-      font-size: 0.8rem;
+      color: #e2e8f0;
+      font-size: 0.84rem;
       font-weight: 600;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid #334155;
     }
     .action-link {
-      color: #60a5fa;
+      color: #38bdf8;
       text-decoration: none;
-      font-size: 0.75rem;
+      font-size: 0.76rem;
+      font-weight: 600;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.15s;
     }
     .action-link:hover {
+      color: #7dd3fc;
       text-decoration: underline;
     }
     .img-wrap {
@@ -534,11 +421,74 @@
       align-items: center;
       justify-content: center;
       cursor: zoom-in;
+      position: relative;
+      background: #020617;
+      overflow: hidden;
     }
     .img-wrap img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
+    }
+    .blend-base {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .blend-heat {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      transition: opacity 0.05s linear;
+    }
+    .image-box-footer {
+      padding: 8px 16px;
+      background: #0f172a;
+      border-top: 1px solid #1e293b;
+      font-size: 0.74rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .opacity-bar {
+      padding: 10px 16px;
+      background: #0f172a;
+      border-top: 1px solid #1e293b;
+    }
+    .opacity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .opacity-val {
+      color: #38bdf8;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .opacity-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #334155;
+      outline: none;
+      cursor: pointer;
+      accent-color: #0284c7;
+    }
+    .opacity-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: #64748b;
+      margin-top: 4px;
     }
 
     /* Clinical guidance box */
@@ -778,54 +728,51 @@
           <div class="conf-badge" id="confText"></div>
         </div>
 
-        <!-- View mode switcher -->
-        <div class="view-toolbar">
-          <div class="view-modes">
-            <button id="btnModeSlider" class="view-btn active" onclick="setViewMode('slider')">⇋ Comparison Slider</button>
-            <button id="btnModeGrid" class="view-btn" onclick="setViewMode('grid')">◫ Side by Side</button>
-          </div>
-          <div>
-            <a id="downloadLink" class="action-link" style="font-weight: 600;">Download Heatmap</a>
-          </div>
-        </div>
-
-        <!-- 1. Interactive Split Comparison View (Default) -->
-        <div id="sliderView" class="comparison-container">
-          <img id="sliderOrigImg" class="comp-img" alt="Original Preprocessed">
-          <div id="sliderOverlay" class="comp-overlay">
-            <img id="sliderHeatmapImg" class="comp-img comp-overlay-inner" alt="Heatmap Overlay">
-          </div>
-          <div id="sliderDivider" class="slider-divider">
-            <div class="slider-handle">⇄</div>
-          </div>
-          <input type="range" min="0" max="100" value="50" class="comparison-range" id="compRange" oninput="updateComparison(this.value)">
-          <div class="comparison-labels">
-            <span class="comp-pill">Preprocessed Fundus</span>
-            <span class="comp-pill">Grad-CAM Overlay</span>
-          </div>
-        </div>
-
-        <!-- 2. Side by Side View -->
-        <div id="gridView" class="images-grid" style="display:none;">
+        <!-- Diagnostic Images (Side by Side with Live Heatmap Blend) -->
+        <div class="images-grid">
+          <!-- Card 1: Preprocessed Input -->
           <div class="image-box">
             <div class="image-box-header">
               <span>Preprocessed Input (CLAHE)</span>
               <span class="action-link" onclick="openModal('origImg')">Expand</span>
             </div>
-            <div class="img-wrap" onclick="openModal('origImg')">
+            <div class="img-wrap" onclick="openModal('origImg')" title="Click to zoom in">
               <img id="origImg" alt="Preprocessed fundus image">
             </div>
+            <div class="image-box-footer">
+              <span>Circular crop & contrast-enhanced</span>
+              <span>224 × 224</span>
+            </div>
           </div>
+
+          <!-- Card 2: Grad-CAM Explainability Heatmap with Live Opacity Blend -->
           <div class="image-box">
             <div class="image-box-header">
-              <span>Grad-CAM Heatmap</span>
-              <span class="action-link" onclick="openModal('heatmapImg')">Expand</span>
+              <span>Grad-CAM Explainability Heatmap</span>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <a id="downloadLink" class="action-link">Download</a>
+                <span class="action-link" onclick="openModal('heatmapImg')">Expand</span>
+              </div>
             </div>
-            <div class="img-wrap" onclick="openModal('heatmapImg')">
-              <img id="heatmapImg" alt="Grad-CAM explainability heatmap">
+            <div class="img-wrap" onclick="openModal('heatmapImg')" title="Click to zoom in">
+              <img id="blendBaseImg" class="blend-base" alt="Preprocessed fundus base">
+              <img id="heatmapImg" class="blend-heat" alt="Grad-CAM explainability heatmap">
+            </div>
+            <div class="opacity-bar">
+              <div class="opacity-header">
+                <span>Heatmap Blend / Opacity</span>
+                <span id="opacityVal" class="opacity-val">100%</span>
+              </div>
+              <input type="range" id="opacitySlider" min="0" max="100" value="100" class="opacity-slider" oninput="setHeatmapOpacity(this.value)">
+              <div class="opacity-labels">
+                <span>Fundus (0%)</span>
+                <span>Balanced (50%)</span>
+                <span>Full Heatmap (100%)</span>
+              </div>
             </div>
           </div>
         </div>
+
 
         <!-- Clinical explanation -->
         <div class="explanation-box">
@@ -994,31 +941,12 @@ function getClassBarColor(idx) {
   return "bar-c" + idx;
 }
 
-// Before/After comparison slider logic
-function updateComparison(val) {
-  const overlay = document.getElementById("sliderOverlay");
-  const divider = document.getElementById("sliderDivider");
-  overlay.style.width = val + "%";
-  divider.style.left = val + "%";
-}
-
-function setViewMode(mode) {
-  const sliderView = document.getElementById("sliderView");
-  const gridView = document.getElementById("gridView");
-  const btnSlider = document.getElementById("btnModeSlider");
-  const btnGrid = document.getElementById("btnModeGrid");
-
-  if (mode === "slider") {
-    sliderView.style.display = "block";
-    gridView.style.display = "none";
-    btnSlider.classList.add("active");
-    btnGrid.classList.remove("active");
-  } else {
-    sliderView.style.display = "none";
-    gridView.style.display = "grid";
-    btnSlider.classList.remove("active");
-    btnGrid.classList.add("active");
-  }
+// Interactive Heatmap Opacity / Blend logic
+function setHeatmapOpacity(val) {
+  const heat = document.getElementById("heatmapImg");
+  const label = document.getElementById("opacityVal");
+  if (heat) heat.style.opacity = val / 100;
+  if (label) label.textContent = val + "%";
 }
 
 async function runScan() {
@@ -1059,15 +987,15 @@ function renderResult(data) {
   const origSrc = "data:image/png;base64," + data.processed_image_b64;
   const heatmapSrc = "data:image/png;base64," + data.heatmap_overlay_b64;
 
-  // Populate side-by-side grid
+  // Populate diagnostic images
   document.getElementById("origImg").src = origSrc;
+  document.getElementById("blendBaseImg").src = origSrc;
   document.getElementById("heatmapImg").src = heatmapSrc;
 
-  // Populate comparison slider
-  document.getElementById("sliderOrigImg").src = origSrc;
-  document.getElementById("sliderHeatmapImg").src = heatmapSrc;
-  document.getElementById("compRange").value = 50;
-  updateComparison(50);
+  // Reset opacity slider to 100%
+  const opacitySlider = document.getElementById("opacitySlider");
+  if (opacitySlider) opacitySlider.value = 100;
+  setHeatmapOpacity(100);
 
   // Set download link
   downloadLink.href = heatmapSrc;
