@@ -3,6 +3,7 @@ Loads the trained model once at startup and exposes a single `predict()`
 function the API route calls per request.
 """
 import base64
+import gc
 import io
 import os
 import sys
@@ -11,6 +12,9 @@ import numpy as np
 import torch
 from PIL import Image
 from torchvision import transforms
+
+# Restrict CPU threads to prevent memory explosion on containerized cloud tiers
+torch.set_num_threads(1)
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "model"))
 from preprocess import preprocess_array  # noqa: E402
@@ -49,14 +53,23 @@ def load_model(checkpoint_path: str = None):
     checkpoint_path = checkpoint_path or os.path.join(
         os.path.dirname(__file__), "..", "..", "model", "checkpoints", "best_model.pt"
     )
-    _model = build_model()
+    # Build empty model without downloading redundant ImageNet weights
+    _model = build_model(pretrained=False)
     if os.path.exists(checkpoint_path):
-        _model.load_state_dict(torch.load(checkpoint_path, map_location=_device))
+        state_dict = torch.load(checkpoint_path, map_location=_device)
+        _model.load_state_dict(state_dict)
+        del state_dict
         print(f"Loaded checkpoint from {checkpoint_path}")
     else:
         print(f"WARNING: no checkpoint found at {checkpoint_path} — using untrained weights (dev only)")
+
+    # Freeze model weights to reduce autograd memory during inference
+    for param in _model.parameters():
+        param.requires_grad = False
+
     _model.to(_device)
     _model.eval()
+    gc.collect()
 
     # EfficientNet-B0's last conv block, standard Grad-CAM target for this arch
     target_layer = _model.features[-1]
@@ -77,14 +90,20 @@ def predict(image_bytes: bytes) -> dict:
     if _model is None:
         load_model()
 
-    raw = np.array(Image.open(io.BytesIO(image_bytes)).convert("RGB"))
+    pil_img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+
+    # Downsample high-res camera photos to max 768px to prevent memory spikes in OpenCV CLAHE
+    if max(pil_img.size) > 768:
+        pil_img.thumbnail((768, 768), Image.Resampling.BILINEAR)
+
+    raw = np.array(pil_img)
     processed = preprocess_array(raw, size=IMG_SIZE)
 
     input_tensor = _normalize(processed).unsqueeze(0).to(_device)
     heatmap, pred_class, probs = _gradcam.generate(input_tensor)
     overlay = overlay_heatmap(processed, heatmap)
 
-    return {
+    result = {
         "predicted_class": pred_class,
         "predicted_label": CLASS_NAMES[pred_class],
         "confidence": float(probs[pred_class]),
@@ -93,3 +112,10 @@ def predict(image_bytes: bytes) -> dict:
         "processed_image_b64": _image_to_b64(processed),
         "heatmap_overlay_b64": _image_to_b64(overlay),
     }
+
+    # Clean up intermediate buffers and trigger garbage collection
+    del raw, processed, input_tensor, heatmap, overlay, pil_img
+    gc.collect()
+
+    return result
+

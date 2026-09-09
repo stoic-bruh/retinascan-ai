@@ -1,4 +1,4 @@
-﻿# RetinaScan AI — Cloud Deployment Guide (100% Free Tiers)
+# RetinaScan AI — Cloud Deployment Guide (100% Free Tiers)
 
 This guide details how to deploy **RetinaScan AI** to 100% free cloud platforms for your hackathon presentation.
 
@@ -38,7 +38,7 @@ Render allows you to host the unified FastAPI backend + custom frontend for free
      ```
    * **Start Command**:
      ```bash
-     uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+     uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT --workers 1
      ```
    * **Instance Type**: `Free`
 6. Click **Deploy Web Service**.
