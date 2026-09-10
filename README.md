@@ -129,7 +129,7 @@ retinascan-ai/
 
 | Item | Location | Description |
 |---|---|---|
-| Final Presentation | [Google Drive Slides](https://docs.google.com/presentation/d/1XuAzEb6Oc-k_TRwPhefbbkqQMOsFuOc7/edit?usp=drive_link&ouid=112337875314343648118&rtpof=true&sd=true) / `submission/` | Official 6-page presentation (`BetaAlanine_SIH2026_Presentation.pptx`) |
+| Final Presentation | [Google Drive Slides](https://docs.google.com/presentation/d/11kcs6WbC7Omp3oKMptgNJXTZNqfDYaj1/edit?usp=sharing&ouid=112337875314343648118&rtpof=true&sd=true) / `submission/` | Official 6-page presentation (`BetaAlanine_SIH2026_Presentation.pptx`) |
 | Demo Video | [Google Drive Video](https://drive.google.com/file/d/16wWaZko3v8RjWtXLJfv3Y7vmWDPnVKZN/view?usp=drive_link) / `demo.mp4` | Recorded demonstration video with voiceover |
 | Source Code | `backend/`, `model/`, `frontend/` | Complete, verified, working application source |
 | Architecture & ADRs | `docs/` | Pipeline flow diagrams and design decisions |
@@ -142,7 +142,7 @@ retinascan-ai/
 
 The official 6-page SIH pitch deck is available on Google Drive and in the `submission/` directory:
 
-- **Google Drive Presentation (PPTX / Slides):** [View Presentation on Google Drive](https://docs.google.com/presentation/d/1XuAzEb6Oc-k_TRwPhefbbkqQMOsFuOc7/edit?usp=drive_link&ouid=112337875314343648118&rtpof=true&sd=true)
+- **Google Drive Presentation (PPTX / Slides):** [View Presentation on Google Drive](https://docs.google.com/presentation/d/11kcs6WbC7Omp3oKMptgNJXTZNqfDYaj1/edit?usp=sharing&ouid=112337875314343648118&rtpof=true&sd=true)
 - **Direct PPTX File:** [submission/BetaAlanine_SIH2026_Presentation.pptx](submission/BetaAlanine_SIH2026_Presentation.pptx)
 - **Presentation Details:** [submission/PRESENTATION.md](submission/PRESENTATION.md)
 
