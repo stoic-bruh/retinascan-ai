@@ -90,14 +90,26 @@ def predict(image_bytes: bytes) -> dict:
     if _model is None:
         load_model()
 
-    pil_img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    bio = io.BytesIO(image_bytes)
+    pil_img = Image.open(bio)
+    # Use draft() to decode directly at reduced size if JPEG (saves up to 90% memory)
+    if hasattr(pil_img, "draft"):
+        try:
+            pil_img.draft("RGB", (512, 512))
+        except Exception:
+            pass
+    pil_img = pil_img.convert("RGB")
+    del bio
 
-    # Downsample high-res camera photos to max 768px to prevent memory spikes in OpenCV CLAHE
-    if max(pil_img.size) > 768:
-        pil_img.thumbnail((768, 768), Image.Resampling.BILINEAR)
+    # Downsample high-res camera photos to max 512px (more than 2x model input)
+    if max(pil_img.size) > 512:
+        pil_img.thumbnail((512, 512), Image.Resampling.BILINEAR)
 
     raw = np.array(pil_img)
+    del pil_img
+
     processed = preprocess_array(raw, size=IMG_SIZE)
+    del raw
 
     input_tensor = _normalize(processed).unsqueeze(0).to(_device)
     heatmap, pred_class, probs = _gradcam.generate(input_tensor)
@@ -114,7 +126,7 @@ def predict(image_bytes: bytes) -> dict:
     }
 
     # Clean up intermediate buffers and trigger garbage collection
-    del raw, processed, input_tensor, heatmap, overlay, pil_img
+    del processed, input_tensor, heatmap, overlay
     gc.collect()
 
     return result

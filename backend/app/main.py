@@ -6,6 +6,7 @@ Run locally:
 
 Docs auto-generated at http://localhost:8000/docs
 """
+import gc
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -46,6 +47,9 @@ async def predict_endpoint(file: UploadFile = File(...)):
         result = predict(image_bytes)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Inference failed: {e}")
+    finally:
+        del image_bytes
+        gc.collect()
 
     return result
 
