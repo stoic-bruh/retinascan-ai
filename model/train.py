@@ -20,7 +20,10 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, models
 from sklearn.model_selection import train_test_split
 from sklearn.utils.class_weight import compute_class_weight
-from tqdm import tqdm
+try:
+    from tqdm import tqdm
+except ImportError:
+    tqdm = lambda x, **kwargs: x
 
 from preprocess import preprocess_image
 
