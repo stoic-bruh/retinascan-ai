@@ -1,9 +1,9 @@
-﻿FROM python:3.10-slim
+FROM python:3.10-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=7860
+    PORT=8000
 
 WORKDIR /app
 
@@ -19,8 +19,8 @@ COPY backend/ ./backend/
 COPY model/ ./model/
 COPY frontend/ ./frontend/
 
-# Expose port (7860 default for Hugging Face Spaces, overridable via $PORT)
-EXPOSE 7860
+# Expose port (default 8000, overridable via $PORT on cloud hosts like Render)
+EXPOSE 8000
 
 # Launch Uvicorn server binding to 0.0.0.0 and dynamic port
-CMD ["sh", "-c", "uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
+CMD ["sh", "-c", "uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

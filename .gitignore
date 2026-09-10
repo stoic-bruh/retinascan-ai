@@ -22,3 +22,6 @@ data/**/*.csv
 .vscode/
 *.ipynb_checkpoints/
 clean-repo-backup/
+ppt_extracted/
+*.backup.pptx
+*.original.pptx

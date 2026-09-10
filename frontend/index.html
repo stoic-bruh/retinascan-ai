@@ -803,8 +803,8 @@
   <div id="configModal" class="modal" onclick="closeConfigModal(event)">
     <div class="config-box" onclick="event.stopPropagation()">
       <h3>Backend API Endpoint</h3>
-      <p>Configure the backend server URL (useful for cloud deployments like Render or Hugging Face):</p>
-      <input type="text" id="apiUrlInput" class="config-input" placeholder="http://localhost:8000">
+      <p>Configure the backend server URL (useful for cloud deployments like Render):</p>
+      <input type="text" id="apiUrlInput" class="config-input" placeholder="https://retinascan-ai-73ss.onrender.com">
       <div class="config-btns">
         <button class="secondary-btn" onclick="closeConfigModal()">Cancel</button>
         <button class="primary-btn" style="width: auto; padding: 8px 16px;" onclick="saveApiUrl()">Save & Connect</button>

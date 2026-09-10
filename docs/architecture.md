@@ -33,7 +33,6 @@ flowchart LR
   demo from any machine.
 
 ## Deployment
-- Backend: Render or HuggingFace Spaces (free tier) — see README for URL
-  once live.
+- Backend: Render (free tier) — see README for live URL.
 - Model checkpoint loaded once at startup, kept in memory for the process
   lifetime (no per-request disk I/O).

@@ -1,7 +1,7 @@
 # RetinaScan AI
 
 **SIH26038 — Explainable AI for Diabetic Retinopathy Screening**
-Team: [add names] · Theme: MedTech/HealthTech · Sponsor: MathWorks
+Team: Tushar, Sahil, Shaurya, Sazid, Ayush, Parshvi · Theme: MedTech/HealthTech · Sponsor: MathWorks
 
 An AI screening tool that grades diabetic retinopathy severity from retinal
 fundus images and shows *why* — via Grad-CAM heatmaps — so the result is
@@ -27,7 +27,7 @@ retinascan-ai/
 ├── docs/
 │   ├── decisions/          # ADRs — one file per key architecture decision
 │   ├── architecture.md
-│   └── demo-script.md      # voiceover script for the demo video
+│   └── deployment.md       # cloud deployment guide
 ├── model/
 │   ├── preprocess.py       # CLAHE + crop + resize
 │   ├── train.py            # EfficientNet-B0 fine-tuning
@@ -40,7 +40,10 @@ retinascan-ai/
 │   └── index.html          # single-file demo UI
 ├── data/
 │   └── README.md           # dataset download instructions (not committed)
-├── ppt/                    # versioned copies of the pitch deck
+├── ppt/                    # pitch deck copies
+├── retinascan_sih_deck_final.pptx # final 6-page presentation deck
+├── demo.mp4                # demo video with voiceover
+├── Dockerfile
 └── requirements.txt
 ```
 
@@ -77,12 +80,12 @@ python -m http.server 5500
 
 ## Live deployment
 
-[Add live URL here once deployed — Render/HuggingFace Spaces, free tier]
+https://retinascan-ai-73ss.onrender.com — the same link serves both the live web app and the API (open it directly in a browser to use it).
 
 ## Submission checklist (per community admin instructions, deadline Sept 3)
 
-- [ ] 6-page PPT (`ppt/`)
-- [ ] Demo video with voiceover
-- [ ] Working code (this repo)
-- [ ] Live deployment link (bonus, software track)
-- [ ] README complete (this file)
+- [x] 6-page PPT (`retinascan_sih_deck_final.pptx` & `ppt/`)
+- [x] Demo video with voiceover (`demo.mp4`)
+- [x] Working code (this repo)
+- [x] Live deployment link (bonus, software track — https://retinascan-ai-73ss.onrender.com)
+- [x] README complete (this file)
