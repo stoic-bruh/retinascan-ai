@@ -4,8 +4,9 @@ The demonstration video for **RetinaScan AI** showcases the end-to-end clinical 
 
 ## Video Deliverable
 
-- **Repository Video File:** [Watch Demo Video (`demo.mp4`)](../demo.mp4)
+- **Google Drive Demo Video:** [Watch Demo Video (Google Drive)](https://drive.google.com/file/d/16wWaZko3v8RjWtXLJfv3Y7vmWDPnVKZN/view?usp=drive_link)
 - **Live Interactive Demo:** [https://retinascan-ai-73ss.onrender.com](https://retinascan-ai-73ss.onrender.com)
+- **Repository Video File:** [Watch Demo Video (`demo.mp4`)](../demo.mp4)
 
 ## What the Demo Shows
 

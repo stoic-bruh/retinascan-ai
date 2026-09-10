@@ -129,8 +129,8 @@ retinascan-ai/
 
 | Item | Location | Description |
 |---|---|---|
-| Final Presentation | `submission/` | Final 6-page presentation (`BetaAlanine_SIH2026_Presentation.pptx`) |
-| Demo Video | `submission/DEMO.md` / `demo.mp4` | Recorded demonstration video with voiceover |
+| Final Presentation | [Google Drive Slides](https://docs.google.com/presentation/d/1XuAzEb6Oc-k_TRwPhefbbkqQMOsFuOc7/edit?usp=drive_link&ouid=112337875314343648118&rtpof=true&sd=true) / `submission/` | Official 6-page presentation (`BetaAlanine_SIH2026_Presentation.pptx`) |
+| Demo Video | [Google Drive Video](https://drive.google.com/file/d/16wWaZko3v8RjWtXLJfv3Y7vmWDPnVKZN/view?usp=drive_link) / `demo.mp4` | Recorded demonstration video with voiceover |
 | Source Code | `backend/`, `model/`, `frontend/` | Complete, verified, working application source |
 | Architecture & ADRs | `docs/` | Pipeline flow diagrams and design decisions |
 | Application Screenshots | `assets/screenshots/` | Working UI and Grad-CAM output captures |
@@ -140,20 +140,22 @@ retinascan-ai/
 
 ## 8. Final Presentation
 
-The official 6-page SIH pitch deck is available in the `submission/` directory:
+The official 6-page SIH pitch deck is available on Google Drive and in the `submission/` directory:
 
-- **Presentation Document:** [submission/PRESENTATION.md](submission/PRESENTATION.md)
+- **Google Drive Presentation (PPTX / Slides):** [View Presentation on Google Drive](https://docs.google.com/presentation/d/1XuAzEb6Oc-k_TRwPhefbbkqQMOsFuOc7/edit?usp=drive_link&ouid=112337875314343648118&rtpof=true&sd=true)
 - **Direct PPTX File:** [submission/BetaAlanine_SIH2026_Presentation.pptx](submission/BetaAlanine_SIH2026_Presentation.pptx)
+- **Presentation Details:** [submission/PRESENTATION.md](submission/PRESENTATION.md)
 
 ---
 
 ## 9. Demo Video
 
-A full voiceover demonstration of the working system is included:
+A full voiceover demonstration of the working system is available on Google Drive and in the repository:
 
-- **Demo Video Guide:** [submission/DEMO.md](submission/DEMO.md)
-- **Video File:** [demo.mp4](demo.mp4)
+- **Google Drive Demo Video:** [Watch Demo Video on Google Drive](https://drive.google.com/file/d/16wWaZko3v8RjWtXLJfv3Y7vmWDPnVKZN/view?usp=drive_link)
 - **Live Interactive App:** [https://retinascan-ai-73ss.onrender.com](https://retinascan-ai-73ss.onrender.com)
+- **Repository Video File:** [demo.mp4](demo.mp4)
+- **Demo Video Guide:** [submission/DEMO.md](submission/DEMO.md)
 
 ---
 
@@ -162,6 +164,8 @@ A full voiceover demonstration of the working system is included:
 Screenshots of the working prototype are located in [`assets/screenshots/`](assets/screenshots/):
 
 ![RetinaScan AI Screening Interface](assets/screenshots/01-screening-ui.png)
+
+*Diagnostic Dashboard: Input fundus photograph with CLAHE preprocessing, Class 2 (Moderate DR) severity classification (96.9% confidence), Grad-CAM explainability heatmap with live opacity slider, clinical triage recommendation, and full 5-stage probability breakdown.*
 
 ---
 

@@ -4,7 +4,8 @@ The final presentation for **Smart India Hackathon 2026** is maintained in this 
 
 ## Presentation File
 
-- **Official Deck:** [Open Final Presentation (PPTX)](./BetaAlanine_SIH2026_Presentation.pptx)
+- **Google Drive Presentation (PPTX / Slides):** [View Presentation on Google Drive](https://docs.google.com/presentation/d/1XuAzEb6Oc-k_TRwPhefbbkqQMOsFuOc7/edit?usp=drive_link&ouid=112337875314343648118&rtpof=true&sd=true)
+- **Repository PPTX File:** [Open Final Presentation (PPTX)](./BetaAlanine_SIH2026_Presentation.pptx)
 
 ### Presentation Details
 
